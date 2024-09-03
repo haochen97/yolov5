@@ -1,41 +1,81 @@
+import threading
+import queue
+from os import times
+import time
+
 import pyautogui
 from kernel import match
 from screenshot import WindScreenShot
 import win32gui, win32con
 
-class DragKill():
+class DragKill:
 
-    def __init__(self, hwnd):
+    def __init__(self, hwnd, rect):
         self.hwnd = hwnd
+        self.rect = rect
 
     def run(self, img):
         try:
-            mt = match('zidongshoulie.png')
+            mt = match(img, 'duoquwupin.jpg', crop=[0, self.rect[3] - self.rect[1] - 200, 0, self.rect[2] - self.rect[0]])
         except:
+            mt = 0
             print('匹配出错了')
-
+        # mt = match(img, 'duoquwupin.jpg', crop=[0, self.rect[3] - self.rect[1] - 200, 0, self.rect[2] - self.rect[0]])
         if mt == 0:
-            print('未找到目标')
+            pass
         else:
-            print(mt)
-            self.show_window()
+            print('找到匹配目标')
+            self.drag(mt)
 
 
-    def drag(self):
-        pass
+    def drag(self, pos):
+        x = self.rect[0] + pos[0]
+        y = self.rect[1] + pos[1]
+        pyautogui.moveTo(x, y)
+        pyautogui.dragTo(x, self.rect[3]-30, duration=0.2)
+        pyautogui.moveTo(x, y)
 
-    def show_window(self):
-        # 判断窗口是否置顶
-        flag = win32gui.GetWindowLong(self.hwnd, win32con.GWL_EXSTYLE)
-        print(flag)
-        if flag == 256:
-            win32gui.SetWindowPos(self.hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
-        else:
-            print('窗口已置顶')
-
+# def shot(q):
+#     while True:
+#         try:
+#             img = wss.run()
+#             q.put(img)
+#             time.sleep(0.03)
+#         except:
+#             print('截图太快出错了')
+#
+#
+# def detect(q):
+#     while True:
+#         try:
+#             img = q.get()
+#             dk.run(img)
+#             time.sleep(0.03)
+#         except:
+#             print('匹配太快出错了')
+#         # img = q.get()
+#         # dk.run(img)
+#         # time.sleep(0.03)
+def shot_detect():
+    while True:
+        img = wss.run()
+        dk.run(img)
+        time.sleep(0.03)
 
 if __name__ == "__main__":
+    # 初始化
     wss = WindScreenShot('缘起墨香', 'pyqt')
-    img = wss.run()
-    dk = DragKill(wss.hwnd)
-    dk.run(img)
+    dk = DragKill(wss.hwnd, wss.rect)
+
+    # # 创建队列
+    # q = queue.Queue()
+
+    # 创建线程
+    # shot_thread = threading.Thread(target=shot, args=(q,))
+    # detect_thread = threading.Thread(target=detect, args=(q,))
+    shot_detect_thread = threading.Thread(target=shot_detect)
+
+    # 启动线程
+    # shot_thread.start()
+    # detect_thread.start()
+    shot_detect_thread.start()

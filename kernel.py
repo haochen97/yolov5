@@ -15,7 +15,7 @@ def process_path(filename: str, task:int=0):
     return path
 
 
-def match(template_picture: str, gray=1, imshow=0, multiple=0, sequence=0, threshold=0.7):
+def match(src, template_picture: str, gray=1, imshow=0, multiple=0, sequence=0, threshold=0.9, crop = None):
     """
     @param
     base：作为模板匹配的底图文件名
@@ -25,14 +25,19 @@ def match(template_picture: str, gray=1, imshow=0, multiple=0, sequence=0, thres
     multiple:匹配多个目标，默认为0不开机，如果为1则开启。
     sequence:当多目标匹配时，返回从上至下的某个值，默认为0返回最上方的。
     threshold:匹配阈值，默认为0.9
+    crop:对底图进行裁剪，格式为[y1, y2, x1, x2]
     @return
     返回搜索到的模板图片中心点坐标(x，y)
     """
 
     # 读取底图和模板图片
-    src = cv2.imread('E:\\Projects\\mxtest\\img\\img0\\img0.jpg')
+    # src = cv2.imread('images/window.jpg')
     template = cv2.imread(process_path(template_picture))
-    
+
+    # 对底图进行剪裁
+    if crop:
+        src = src[crop[0]:crop[1], crop[2]:crop[3]]
+
     # 读取模板图片的高和宽
     h, w = template.shape[:2]
 

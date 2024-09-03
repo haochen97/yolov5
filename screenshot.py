@@ -1,24 +1,13 @@
-import dxcam
-import cv2
-import sys
-import numpy as np
 import time
-import win32api, win32con, win32gui
-from pkg_resources import non_empty_lines
-import win32gui
+
+import dxcam
+import numpy as np
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import *
 import win32gui
 import sys
-import win32con
-import win32ui
-# from PIL import Image
-import ctypes
-from ctypes import *
 import cv2
-import numpy as np
 
-class WindScreenShot():
+class WindScreenShot:
     """
     获取指定窗口图像，实例化时需要传入窗口标题
     """
@@ -28,12 +17,18 @@ class WindScreenShot():
         self.way = way
         self.hwnd = self.find_fuzzy_top_window_hwnd(windowname)[0][1]
         self.rect = self.get_window_rect()
+        self.app = QApplication(sys.argv)
+        print(self.rect)
+        if way == 'dxcam':
+            self.camera = dxcam.create()
 
     def run(self):
         if self.way == 'pyqt':
-            self.get_img_pyqt()
+            img = self.get_img_pyqt()
+            return img
         if self.way == 'dxcam':
-            self.get_img_dxcam()
+            img = self.get_img_dxcam()
+            return img
 
     def show_window_attr(self, hwnd):
         """
@@ -78,24 +73,45 @@ class WindScreenShot():
         left, top, right, bottom = win32gui.GetWindowRect(self.hwnd)
         return left, top, right, bottom
 
+    def convert_format_2mat(self, img):
+        """
+        Converts a QImage into an opencv MAT format
+        """
+        # Format_RGB32 = 4,存入格式为B,G,R,A 对应 0,1,2,3
+        # RGB32图像每个像素用32比特位表示，占4个字节，
+        # R，G，B分量分别用8个bit表示，存储顺序为B，G，R，最后8个字节保留
+        img = img.convertToFormat(4)
+        width = img.width()
+        height = img.height()
+
+        ptr = img.bits()
+        ptr.setsize(img.byteCount())
+        arr = np.array(ptr).reshape(height, width, 4)  # Copies the data
+        # arr为BGRA，4通道图片
+        return arr
+
     def get_img_dxcam(self) :
         # 根据句柄截图
-        camera = dxcam.create()
-        img = camera.grab(self.rect)
+        img = self.camera.grab(self.rect)
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
         cv2.imwrite('images/window.jpg', img)
-        self.img = img
+        # self.img = img
         return img
 
     def get_img_pyqt(self):
-        app = QApplication(sys.argv)
+        # app = QApplication(sys.argv)
         screen = QApplication.primaryScreen()
         img = screen.grabWindow(self.hwnd).toImage()
-        img.save('images/window.jpg')
+        img = self.convert_format_2mat(img)
+        # cv2.imwrite('images/window.jpg', img)
+        # img.save('images/window.jpg')
+        # self.img = img
         return img
 
 
 if __name__ == "__main__":
     wss = WindScreenShot('缘起墨香', 'pyqt')
-    wss.run()
+    while True:
+       wss.run()
+       time.sleep(0.1)
 
