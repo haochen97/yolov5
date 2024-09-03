@@ -5,23 +5,35 @@ import numpy as np
 import time
 import win32api, win32con, win32gui
 from pkg_resources import non_empty_lines
+import win32gui
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import *
+import win32gui
+import sys
+import win32con
+import win32ui
+# from PIL import Image
+import ctypes
+from ctypes import *
+import cv2
+import numpy as np
 
-
-class WindScreenShot:
+class WindScreenShot():
     """
     获取指定窗口图像，实例化时需要传入窗口标题
     """
-    app = None
-    ori_img = None
-    hwnd = None
 
-    def __init__(self, fuzzy_window_name) -> None:
+    def __init__(self, windowname, way) -> None:
         self.img = None
-        self.fuzzy_window_name = fuzzy_window_name
-        self.fuzzy_window_attr = self.find_fuzzy_top_window()
-        self.fuzzy_window_rect = self.get_window_rect()
-        # print(self.fuzzy_window_rect)
-        # self.screen_shot()
+        self.way = way
+        self.hwnd = self.find_fuzzy_top_window_hwnd(windowname)[0][1]
+        self.rect = self.get_window_rect()
+
+    def run(self):
+        if self.way == 'pyqt':
+            self.get_img_pyqt()
+        if self.way == 'dxcam':
+            self.get_img_dxcam()
 
     def show_window_attr(self, hwnd):
         """
@@ -48,7 +60,7 @@ class WindScreenShot:
         )
         return hwnd_list
 
-    def find_fuzzy_top_window(self):
+    def find_fuzzy_top_window_hwnd(self, windowname):
         """
         根据标题模糊查找全部符合条件的主窗体
         :param FuzzyWindowName: 窗口标题部分文字
@@ -58,25 +70,32 @@ class WindScreenShot:
         all_windows = self.show_top_windows()
         result = []
         for window in all_windows:
-            if self.fuzzy_window_name in window[0]:
+            if windowname in window[0]:
                 result.append(window)
         return result
 
     def get_window_rect(self):
-        left, top, right, bottom = win32gui.GetWindowRect(self.fuzzy_window_attr[0][1])
-        return (left, top, right, bottom)
+        left, top, right, bottom = win32gui.GetWindowRect(self.hwnd)
+        return left, top, right, bottom
 
-    def run(self) :
+    def get_img_dxcam(self) :
         # 根据句柄截图
         camera = dxcam.create()
-        img = camera.grab(self.fuzzy_window_rect)
+        img = camera.grab(self.rect)
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-        cv2.imwrite('E:\\yolov5\\images\\window.jpg', img)
+        cv2.imwrite('images/window.jpg', img)
         self.img = img
+        return img
+
+    def get_img_pyqt(self):
+        app = QApplication(sys.argv)
+        screen = QApplication.primaryScreen()
+        img = screen.grabWindow(self.hwnd).toImage()
+        img.save('images/window.jpg')
         return img
 
 
 if __name__ == "__main__":
-    window = WindScreenShot('缘起墨香')
-    print(window.fuzzy_window_attr)
-    print(window.fuzzy_window_rect)
+    wss = WindScreenShot('缘起墨香', 'pyqt')
+    wss.run()
+

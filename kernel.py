@@ -3,15 +3,15 @@ import numpy as np
 import win32api, win32con, win32gui
 
 
-def process_path(filename:str, task:int=0):
-    '''
+def process_path(filename: str, task:int=0):
+    """
     处理文件路径.
     @param
     filename:文件名，字符串形式。
     task:是否为任务图片，默认为0.
-    '''
+    """
 
-    path = f'E:\\Projects\\mxtest\\img\\{filename}.png'
+    path = f'images/templete_images/{filename}'
     return path
 
 
