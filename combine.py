@@ -2,11 +2,13 @@ import threading
 import queue
 from os import times
 import time
-
 import pyautogui
+import pydirectinput
 from kernel import match
 from screenshot import WindScreenShot
 import win32gui, win32con
+from kernel import match
+
 
 class DragKill:
 

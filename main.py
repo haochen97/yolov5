@@ -1,3 +1,5 @@
+import time
+
 import win32api, win32con, win32gui
 
 from screenshot import WindScreenShot
@@ -8,7 +10,9 @@ import threading
 from pynput.keyboard import Listener, Key
 from combine import DragKill
 from kernel import match
-
+import pydirectinput
+import combine
+from mouse_key import Operate
 
 def start():
     """
@@ -29,17 +33,24 @@ def on_press(key):
         print(f"你按下了esc，监听结束")
         return False
     elif key == Key.f7:
-        key1 = 117
-        # key = ord(key.upper())
-        win32api.SendMessage(wss.hwnd, win32con.WM_KEYDOWN, key1, 0)
-        win32api.SendMessage(wss.hwnd, win32con.WM_KEYUP, key1, 0)
+        pydirectinput.press('f6')
+        for _ in range(5):
+            pos = match(wss.img, 'huoquzuobiao.jpg', threshold=0.95)
+            if pos == 0:
+                pass
+            else:
+                op.click(pos)
+                time.sleep(0.2)
+                break
+        pydirectinput.press('f6')
+        pydirectinput.press('f5')
     elif key == Key.f12:
         pass
 
     # print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
     print(f"你按下了{key}键")
 
-def on_release( key):
+def on_release(key):
     pass
     # print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
     # print(f"你松开了{key}键")
@@ -50,9 +61,10 @@ continue_click = 0
 
 
 if __name__ == "__main__":
-    # 初始化
-    wss = WindScreenShot('缘起墨香', 'pyqt')
+    # 初始化~~~~~~
+    wss = WindScreenShot('新缘起墨香二区友情提醒:注意保护账号及装备安全,谨慎交易!(Ctrl+W隐藏/显示游戏)[R复活窗口][E洗恶]', 'pyqt')
     dk = DragKill(wss.hwnd, wss.rect)
+    op = Operate(wss.hwnd)
 
     shot_detect_thread = threading.Thread(target=start)
     shot_detect_thread.start()

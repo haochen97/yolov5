@@ -15,7 +15,9 @@ class WindScreenShot:
     def __init__(self, windowname, way) -> None:
         self.img = None
         self.way = way
-        self.hwnd = self.find_fuzzy_top_window_hwnd(windowname)[0][1]
+        self.hwnd = win32gui.FindWindow(None, windowname)
+        print(self.hwnd)
+        # self.hwnd = self.find_fuzzy_top_window_hwnd(windowname)[0][1]
         self.rect = self.get_window_rect()
         self.app = QApplication(sys.argv)
         print(self.rect)
@@ -107,7 +109,7 @@ class WindScreenShot:
         img = self.convert_format_2mat(img)
         cv2.imwrite('images/window.jpg', img)
         # img.save('images/window.jpg')
-        # self.img = img
+        self.img = img
         return img
 
 
