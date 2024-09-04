@@ -16,7 +16,7 @@ class DragKill:
 
     def run(self, img):
         try:
-            mt = match(img, 'duoquwupin.jpg', crop=[0, self.rect[3] - self.rect[1] - 200, 0, self.rect[2] - self.rect[0]])
+            mt = match(img, 'duoquwupin.jpg', threshold=0.95, crop=[0, 700, 0, 1600])
         except:
             mt = 0
             print('匹配出错了')
@@ -24,15 +24,16 @@ class DragKill:
         if mt == 0:
             pass
         else:
-            print('找到匹配目标')
+            print(f'找到匹配目标,图中坐标{mt}')
             self.drag(mt)
 
 
     def drag(self, pos):
         x = self.rect[0] + pos[0]
-        y = self.rect[1] + pos[1]
+        y = self.rect[1] + pos[1] + 25    # 这里的25是pyqt截图时，窗口上标题栏的高度
+        print(x, y)
         pyautogui.moveTo(x, y)
-        pyautogui.dragTo(x, self.rect[3]-30, duration=0.2)
+        pyautogui.dragTo(x, self.rect[3]-30, duration=0.18)
         pyautogui.moveTo(x, y)
 
 # def shot(q):

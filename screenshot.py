@@ -24,9 +24,11 @@ class WindScreenShot:
 
     def run(self):
         if self.way == 'pyqt':
+            self.rect = self.get_window_rect()
             img = self.get_img_pyqt()
             return img
         if self.way == 'dxcam':
+            self.rect = self.get_window_rect()
             img = self.get_img_dxcam()
             return img
 
@@ -103,7 +105,7 @@ class WindScreenShot:
         screen = QApplication.primaryScreen()
         img = screen.grabWindow(self.hwnd).toImage()
         img = self.convert_format_2mat(img)
-        # cv2.imwrite('images/window.jpg', img)
+        cv2.imwrite('images/window.jpg', img)
         # img.save('images/window.jpg')
         # self.img = img
         return img

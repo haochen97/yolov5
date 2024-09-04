@@ -1,10 +1,13 @@
+import win32api, win32con, win32gui
+
 from screenshot import WindScreenShot
-from yolodetect import mydetect
+# from yolodetect import mydetect
 import cv2
 import threading
-from yolodetect.mydetect import detect
+# from yolodetect.mydetect import detect
 from pynput.keyboard import Listener, Key
 from combine import DragKill
+from kernel import match
 
 
 def start():
@@ -13,7 +16,8 @@ def start():
     """
     while True:
         try:
-            img0 = wss.run()
+            img = wss.run()    # 截图
+            dk.run(img)    # 自动拖击杀窗口
             # dt.run(img0)
         except:
             print('出错了')
@@ -24,25 +28,40 @@ def on_press(key):
     if key == Key.esc:
         print(f"你按下了esc，监听结束")
         return False
-    print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
+    elif key == Key.f7:
+        key1 = 117
+        # key = ord(key.upper())
+        win32api.SendMessage(wss.hwnd, win32con.WM_KEYDOWN, key1, 0)
+        win32api.SendMessage(wss.hwnd, win32con.WM_KEYUP, key1, 0)
+    elif key == Key.f12:
+        pass
+
+    # print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
     print(f"你按下了{key}键")
 
-
 def on_release( key):
-    print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
-    print(f"你松开了{key}键")
+    pass
+    # print(f"你按下了{key.char if hasattr(key, 'char') else key.name}键")
+    # print(f"你松开了{key}键")
+
+
+# 主要全局变量
+continue_click = 0
 
 
 if __name__ == "__main__":
     # 初始化
     wss = WindScreenShot('缘起墨香', 'pyqt')
-    dk = DragKill(wss)
+    dk = DragKill(wss.hwnd, wss.rect)
+
+    shot_detect_thread = threading.Thread(target=start)
+    shot_detect_thread.start()
     # dt = detect()
     # detect = threading.Thread(target=start)    # 创建持续获取图片并侦测的线程
     # detect.start()
-    # # 启动键盘监听
-    # with Listener(on_press=on_press, on_release=on_release) as listener:
-    #     listener.join()
+    # 启动键盘监听
+    with Listener(on_press=on_press, on_release=on_release) as listener:
+        listener.join()
 
     # while True:
     #     img0 = wss.run()
