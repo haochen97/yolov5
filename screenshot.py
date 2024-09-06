@@ -1,5 +1,4 @@
 import time
-
 import dxcam
 import numpy as np
 from PyQt5.QtWidgets import QApplication
@@ -20,6 +19,7 @@ class WindScreenShot:
         # self.hwnd = self.find_fuzzy_top_window_hwnd(windowname)[0][1]
         self.rect = self.get_window_rect()
         self.app = QApplication(sys.argv)
+        self.screen = QApplication.primaryScreen()
         print(self.rect)
         if way == 'dxcam':
             self.camera = dxcam.create()
@@ -104,8 +104,8 @@ class WindScreenShot:
 
     def get_img_pyqt(self):
         # app = QApplication(sys.argv)
-        screen = QApplication.primaryScreen()
-        img = screen.grabWindow(self.hwnd).toImage()
+        # screen = QApplication.primaryScreen()
+        img = self.screen.grabWindow(self.hwnd).toImage()
         img = self.convert_format_2mat(img)
         cv2.imwrite('images/window.jpg', img)
         # img.save('images/window.jpg')
@@ -114,8 +114,8 @@ class WindScreenShot:
 
 
 if __name__ == "__main__":
-    wss = WindScreenShot('缘起墨香', 'pyqt')
+    wss = WindScreenShot('新缘起墨香二区友情提醒:注意保护账号及装备安全,谨慎交易!(Ctrl+W隐藏/显示游戏)[R复活窗口][E洗恶]', 'pyqt')
     while True:
-       wss.run()
-       time.sleep(0.1)
+       wss.get_img_pyqt()
+       # time.sleep(0.1)
 

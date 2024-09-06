@@ -20,9 +20,11 @@ def start():
     """
     while True:
         try:
+            fps = 60
             img = wss.run()    # 截图
             dk.run(img)    # 自动拖击杀窗口
             # dt.run(img0)
+            time.sleep(1/fps)
         except:
             print('出错了')
 
@@ -34,6 +36,7 @@ def on_press(key):
         return False
     elif key == Key.f7:
         pydirectinput.press('f6')
+        time.sleep(0.2)
         for _ in range(5):
             pos = match(wss.img, 'huoquzuobiao.jpg', threshold=0.95)
             if pos == 0:

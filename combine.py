@@ -8,7 +8,40 @@ from kernel import match
 from screenshot import WindScreenShot
 import win32gui, win32con
 from kernel import match
+from mouse_key import Operate
 
+class ClickBox(Operate):
+
+    def __init__(self, hwnd, boss: str):
+        super().__init__(hwnd)
+        self.hwnd = hwnd
+        self.renwu = False
+        self.ju = False
+        self.niu = False
+        if boss == "ju":
+            self.ju = True
+            self.juu = False
+        elif boss == "niu":
+            self.niu = True
+            self.niuu = False
+        self.check = False
+
+    def run(self, img):
+        if self.renwu:
+            if self.ju:
+                pass
+            elif self.niu:
+                if self.niuu:
+                    niu_pos = match(img, 'chiniurenwu.jpg', threshold=0.95)
+                if niu_pos != 0:
+                    self.click(self.hwnd, niu_pos)
+        else:
+            for i in range(5):
+                renwu_pos = match(img, 'renwumulu.jpg', threshold=0.95)
+                if renwu_pos != 0:
+                    self.click(self.hwnd, renwu_pos)
+                    self.renwu = True
+                    break
 
 class DragKill:
 
