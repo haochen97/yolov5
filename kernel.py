@@ -15,7 +15,7 @@ def process_path(filename: str, task:int=0):
     return path
 
 
-def match(src, template_picture: str, gray=1, imshow=0, multiple=0, sequence=0, threshold=0.9, crop = None):
+def match(src=None, template_picture: str = None, gray=1, imshow=0, multiple=0, sequence=0, threshold=0.9, crop = None):
     """
     @param
     base：作为模板匹配的底图文件名
@@ -31,7 +31,8 @@ def match(src, template_picture: str, gray=1, imshow=0, multiple=0, sequence=0, 
     """
 
     # 读取底图和模板图片
-    # src = cv2.imread('images/window.jpg')
+    if src is None:
+        src = cv2.imread('images/window.jpg')
     template = cv2.imread(process_path(template_picture))
 
     # 对底图进行剪裁

@@ -112,16 +112,14 @@ class Operate:
         f2 = range(flags2)
 
         #判断点击次数
-        for x in f2:
-            if flags1 == 0:
-                win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, 0, pos)
-                win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, 0, pos)
-            elif flags1 == 1:
-                win32gui.SendMessage(self.hwnd, win32con.WM_RBUTTONDOWN, 0, pos)
-                win32gui.SendMessage(self.hwnd, win32con.WM_RBUTTONUP, 0, pos)
-            else:
-                win32gui.SendMessage(self.hwnd, win32con.WM_MBUTTONDOWN, 0, pos)
-                win32gui.SendMessage(self.hwnd, win32con.WM_MBUTTONUP, 0, pos)
+        if flags2 == 1:
+            win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONDOWN, 0, pos)
+            win32gui.SendMessage(self.hwnd, win32con.WM_LBUTTONUP, 0, pos)
+        elif flags2 == 2:
+            win32gui.PostMessage(self.hwnd, win32con.WM_LBUTTONDOWN, 0, pos)
+            win32gui.PostMessage(self.hwnd, win32con.WM_LBUTTONUP, 0, pos)
+            win32gui.PostMessage(self.hwnd, win32con.WM_LBUTTONDBLCLK, win32con.MK_LBUTTON, pos)
+            win32gui.PostMessage(self.hwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, pos)
 
     def drag(self, pos1: tuple, pos2: tuple, flags1=0):
         '''
