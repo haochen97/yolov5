@@ -88,21 +88,21 @@ class AutoFarm(Operate, QObject):
         通过时间来限制匹配-点击流程,限定每个匹配点击的用时不超过3s
         f2:数量是多少就点击几下
         """
-        start_time = time.time()
+        start_time = time.time()~
         path = self.path(name)
         while True:
             try:
-                pos = match(template_picture=path)
-            except:
+                pos = match(template_picture=path)~
+            except:~
                 print("tclick:匹配错误，应该是读取屏幕截图出错了,重试")
                 continue
-            if pos != 0:
+            if pos != 0:~~
                 self.click(pos, flags2=f2)
                 end_time = time.time()
-                print(f'匹配点击：成功点击{name}，坐标{pos},用时{int(end_time - start_time)}')
-                return 1
+                print(f'匹配点击：成功点击{name}，坐标{pos},用时{int(end_time - start_time)}')~~
+                return 1~
             else:
-                end_time = time.time()
+                end_time = time.time()~
                 time_diffrence = end_time - start_time
                 if time_diffrence >= 3:
                     print(f'匹配点击：点击{name}超时')
@@ -112,31 +112,31 @@ class AutoFarm(Operate, QObject):
     def tansmit(self, loc):
         print(f'准备传送至{loc}')
         # 点击遁点卷轴，每页的0号位置
-        self.tclick('juanzhou', f2=2)
+        self.tclick('juanzhou', f2=2)~
         # 点击要去的位置
         if self.tclick(loc) == 1:
             pass
         else:
-            self.tclick('2page')
+            self.tclick('2page')~
             self.tclick(loc)
         # 点击移动
         self.tclick('yidong')
-        # 点击线路
+        # 点击线路~
         self.tclick(f'{self.line}xian')
-        # 点击链接
-        self.tclick('lianjie')
-        # 等待传送5秒
-        time.sleep(2.5)
+        # 点击链接~~
+        self.tclick('lianjie')~~~
+        # 等待传送5秒~~
+        time.sleep(2.5)~
         self.tclick('chuansong')
         time.sleep(1)
         start_wait = time.time()
-        while True:
+        while True:~
             name_pos = match(template_picture='location/name.jpg')
-            end_wait = time.time()
+            end_wait = time.time()~~
             if name_pos != 0:
                 print(f'传送成功，抵达目标地点{loc}')
                 self.autof5()
-                break
+                break~~
             else:
                 sec = end_wait - start_wait
                 if sec >= 5:
